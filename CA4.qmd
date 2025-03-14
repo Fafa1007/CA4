@@ -1,6 +1,7 @@
 ---
 title: "CA4"
 author: " Laylaa Jorge Abrahams, Roche Witbooi, Chris Eason"
+format: "pdf"
 ---
 
 # Question 1
@@ -33,7 +34,7 @@ $$
 
 Consider again the Egyptian skull data from CA1, given in CA1.csv . Examine the variables in period 2 for marginal and multivariate normality by creating the necessary QQ-plot(s) and chi-square plot(s). Apply any statistical test to the univariate hypotheses and report a measure of the p-value. For the multivariate test, interpret the observed squared generalized distances.
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, hide= TRUE}
 dat <- read.csv("CA1.csv")
 
 library(dplyr)
@@ -41,7 +42,7 @@ period_2 <- dat |> filter(TimePeriod ==2)
 period_2 <- scale(period_2[,1:4])
 ```
 
-```{r}
+```{r, echo=FALSE, hide= TRUE}
 library(ggplot2)
 # chi-squared plots
 d2 <- mahalanobis(period_2, colMeans(period_2), cov= cov(period_2))
@@ -54,9 +55,8 @@ ggplot()+
   geom_abline(intercept = 0, slope = 1, color="red") +
   labs(
     title = "Chi-Squared plot",
-    subtitle = "Theoretical quantiles from a Chi-Squared 
-with P = 4 degrees of freedom (QCP) 
-and Mahalanobis Distance", 
+    subtitle = "Theoretical quantiles from a Chi-Squared with P = 4 degrees
+of freedom (QCP) and Mahalanobis Distance", 
     x = "QCP",
     y = "Mahalanobis Distance"
   ) +
@@ -72,11 +72,11 @@ and Mahalanobis Distance",
   theme_minimal()
 
 critical <- qchisq(0.5, df = 4)
-print(paste("Proportion of points where D^2 < critical value", mean(d2 < critical)*100))
+print(paste("Proportion of points where D^2 < critical value", round(mean(d2 < critical)*100),2))
 
 ```
 
-```{r}
+```{r, echo=FALSE, hide= TRUE}
 library(knitr)
 library(ggplot2)
 library(patchwork)
@@ -107,13 +107,15 @@ for(i in 1:ncol(period_2)){
     ) +
     theme_minimal() +
     theme(
-      axis.title.x = element_text(size = 10),
-      axis.title.y = element_text(size = 10)
+      axis.title.x = element_text(size = 5),
+      axis.title.y = element_text(size = 5), 
+      plot.title = element_text(size = 8), 
       ) 
   
   p_val[i] <- shapiro.test(period_2[,i])$p.value
 }
-wrap_plots(plots)
+wrap_plots(plots, nrow=2) + 
+  plot_layout(nrow = 2, ncol = 2, widths = c(2, 2), heights = c(2, 2))
 rownames(p_val) <- colnames(period_2)
 colnames(p_val) <- "P Value"
 
